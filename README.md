@@ -6,7 +6,7 @@ opening and connected component labeling. Next, a multi-dimensional data assignm
 algorithm is used with the hyperspectral and kinematic likelihoods to update the 
 Gaussian Mixture Filter Components. </p>
 
-## How to Run the Code on the Server
+### How to Run the Code on the Server
 <p> The shell scripting files are run to run the tracking algorithm with the given
 settings. The terminal command to run the shell script is :
    <ul>
