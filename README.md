@@ -2,11 +2,9 @@
 <p> This code performs single aerial target tracking using hyperspectral videos.
 We initially select a target and compute N number of distance maps in a ROI and 
 fuse these distance maps. The final map is thresholded and applied morphological
-opening and connected component labeling. Next, a multi-dimensional data assignment
-algorithm is used with the hyperspectral and kinematic likelihoods to update the 
-Gaussian Mixture Filter Components. </p>
+opening and connected component labeling. Next, a multi-dimensional data assignment algorithm is used with the hyperspectral and kinematic likelihoods to updatethe Gaussian Mixture Filter Components. </p>
 
-### How to Run the Code on the Server
+## How to Run the Code on the Server
 <p> The shell scripting files are run to run the tracking algorithm with the given
 settings. The terminal command to run the shell script is :
    <ul>
