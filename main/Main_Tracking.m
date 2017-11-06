@@ -1,19 +1,18 @@
 function [metric]=Main_Tracking(id,model,coeffs,nGauss,NoiseIndex)
-model.NL =  8 * 0.05 + 0.2;	      % Noise Parameter - Defines the How much noise is added onto the original DIRSIG Images
-% model.alpha = (NoiseIndex + 4) * 0.1;
-N_Groups = [3,6,10,15];		      % How many groups to form out of Spectral Channels
+model.NL =  0.85;       	      % Noise Parameter - Defines the How much noise is added onto the original DIRSIG Images
+N_Groups = 6;                  % How many groups to form out of Spectral Channels
 model.N_LMaps = 6;   		      % N_Groups(4)+1; Number of likelihood maps to represent the full spectrum
-clearvars -except metric id model     % Clear the variables from the previous run
-close all			      % Close the Window
+clearvars -except metric id model % Clear the variables from the previous run
+close all	
 
 %% LOAD DATA
-Dt = dlmread('Input_2.txt');          % Input Data - Target Information - ID, First Frame, Last Frame, 
-				      % Initial Position (X,Y) and Width Height
+% Input Data - Target Information - ID, First Frame, Last Frame, 
+Dt = dlmread('/Volumes/Burak_HardDrive/Moving_Platform_HSI/Ground_Truth/Vehicles_of_Interest.txt');          
 I_F = Dt(id,2);                       % Initial frame where the TOI appears
 I_Fin = Dt(id,3);                     % Final Frame for tracking - Dt(id,3) -> represents 
-				      % the final frame of the target of interest
+target.id = Dt(id,1);
 target.user_x = Dt(id,4);             % Initial X coordinate of target given by the user
-target.user_y = Dt(id,5);             % Initial Y coordinate of target given by the user
+target.user_y = Dt(id,5);        % Initial Y coordinate of target given by the user
 
 %% CREATE THE MODEL - for the Gaussian Mixture Filters
 [model]=modeldefine(model);

@@ -4,9 +4,10 @@
 % Assign the flag and time value
 time=time+1;
 % Directory of the HSI Image - Mat File is Read Partially for Fast Access
-Im_1 = matfile(sprintf('../15PM_MovingPlatform_Scenario/FixedHSI/Image_%d.mat',I_F+time));
+Im_1 = matfile(sprintf('/Volumes/Burak_HardDrive/Moving_Platform_HSI_NoTrees_2/Image_%d.mat',I_F+time));
 
 %% DATA ASSIMILATION
+tic();
 if flag<2
     
     % If the loc parameter is empty,we do tracking based on just measurement
@@ -20,10 +21,10 @@ if flag<2
         x{i,time}(5:6)=[0,0]; % Initiate the Velocities  
         x{i,time}(model.fn)=i;
         target.x{i,time}=x{i,time}';	    % Initial Target Centroid
- 	target.c{i,time}=eye(model.fn)*10;  % Initial Covariance Values
+        target.c{i,time}=eye(model.fn)*10;  % Initial Covariance Values
         for j = 1:model.n
             target.mu{time}{i,j}=x{i,time}';
-            target.sig{time}{i,j}=eye(model.fn)*50; % The Covariance for each Each Gaussian
+            target.sig{time}{i,j}=eye(model.fn) * 50; % The Covariance for each Each Gaussian
         end
     end
 else
@@ -52,11 +53,11 @@ else
         
         % Compute the mixture estimates for the tracked car (GSF)-  Expected Mean of the Prior PDF
        	%% \param[in] Weight : The Weights to Mix the Gaussians
-	%% \param[in] mu_pred : Prediction Estimates for Each Gaussian
-	%% \param[in] sig_pred : Covariance for Gaussians
-	%% \param[out] meanval : The Mean of the Prior PDF
-	%% \param[out] covariance : The Covariance of the Prior PDF
-	[meanval,covariance] = getGSdata(Weight,target.mu_pred{time},target.sig_pred{time},j,model); 
+        %% \param[in] mu_pred : Prediction Estimates for Each Gaussian
+        %% \param[in] sig_pred : Covariance for Gaussians
+        %% \param[out] meanval : The Mean of the Prior PDF
+        %% \param[out] covariance : The Covariance of the Prior PDF
+        [meanval,covariance] = getGSdata(Weight,target.mu_pred{time},target.sig_pred{time},j,model); 
         target.x_predic{j} = meanval; target.P_predic{j}=covariance;       
         target.Z_predic{j} = model.H*target.x_predic{j};  
         target.S_predic{j} = model.H*target.P_predic{j}*model.H'+ model.R;  
@@ -67,7 +68,7 @@ else
         %% Sample the ROI for the TOI
         boundary.row = max(ceil(target.mapped{j}(2)-target.Kn_Thresh(2)),1);
         boundary.col = max(ceil(target.mapped{j}(1)-target.Kn_Thresh(1)),1);
-	if (boundary.row + 2*target.Kn_Thresh(2)) > 1500 % Assertion - Do not Sample from Out of the FOV
+        if (boundary.row + 2*target.Kn_Thresh(2)) > 1500 % Assertion - Do not Sample from Out of the FOV
             boundary.row = boundary.row - (boundary.row - (1500 - 2*target.Kn_Thresh(2)));
         end
         if (boundary.col + 2*target.Kn_Thresh(2)) > 1500 % Do Not Sample from Out of the FOV
@@ -80,11 +81,11 @@ else
         
         %% Employ a sliding window approach to get a Distance Map - Three Methods (Adaptive Fusion, Classic, VR)
         %% \param[in] roi.sp : Hyperspectral Image of the ROI
-	%% \param[in] model.Fusion : The Fusion Method
-	%% \param[out] dMap : Final Distance Map
-	%% \param[out] fMask : Final Binary Mask
-	%% \param[out] target : Updated Target Parameters
-	[dMap,fMask,target]=feval(['SearchTargetROI' '_' model.Fusion],roi.sp,hist,target,model,time);  
+        %% \param[in] model.Fusion : The Fusion Method
+        %% \param[out] dMap : Final Distance Map
+        %% \param[out] fMask : Final Binary Mask
+        %% \param[out] target : Updated Target Parameters
+        [dMap,fMask,target]=feval(['SearchTargetROI' '_' model.Fusion],roi.sp,hist,target,model,time);  
 
         % Generate the blobs out of the binary mask using the connected component labeling algorithm
         [target,f_dist{time},hist]=binary2convex(fMask,dMap,hist,target,time);
@@ -99,8 +100,8 @@ else
         
         %% Map the Detection Results to the first frame using the Accumulated Homography Matrix
         %% \param[in] blobhist : contains the detected blobs at the current time step
-	%% \param[out] blobhist : contains the blobs projected to the reference frame
-	[blobhist] = current2first(blobhist,model,time,I_F+time,I_F+1);
+        %% \param[out] blobhist : contains the blobs projected to the reference frame
+        [blobhist] = current2first(blobhist,model,time,I_F+time,I_F+1);
      
     end
 
@@ -117,7 +118,7 @@ else
         end
         
         % Perform S-D Assignment (MHT) (The track has more than N scans)
-	%% \param[in] model.DA : Data Association Method - (NN, PDAF, S-D)
+        %% \param[in] model.DA : Data Association Method - (NN, PDAF, S-D)
         [target]=feval(['FA_' model.DA],f_dist,model,hist,target,tID,blobhist,time);
     end
 
@@ -159,10 +160,9 @@ else
         target.IDhist{time} = target.as{tID};
     end
     
-    %% Check the cars lost for N number of consecutive frames
-    [x,number2] = trackdrop(ashist,model,target,number2,blobCurrent,Dt,id,roi);
-    target.lost = ashist(:,end);              % Update index for lost target
-    [target,hist] = deletion(target,hist,time);
+    %Transfer the results to global array
+    time_op = toc();
+    target.results(time-1,:) = [mu_aligned(2) mu_aligned(1) I_F+time time_op];
     
 end
 %% GO BACK TO THE DETECTION PART TO READ THE NEXT FRAME

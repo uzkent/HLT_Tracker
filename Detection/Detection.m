@@ -11,7 +11,7 @@ if number2 < (I_Fin - I_F)
 else
     
    %% EVALUATE THE PERFORMANCE OF THE RUN and FINISH THE PROGRAM
-   [metric]=rmse_tp(target,Dt,id,blobCurrent,roi);
+   [metric]=rmse_tp(target);
    return;
 
 end

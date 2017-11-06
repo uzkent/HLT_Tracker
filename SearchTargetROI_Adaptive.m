@@ -31,7 +31,7 @@ Dist = [];
 N = ml.N_LMaps;
 Map = zeros(Rows,Cols,N);
 N_Pixs = zeros(N,1);
-Inc = floor(Dims/N);
+Inc = 30; %floor(Dims/N);
 
 % Compute Individual Likelihood Maps from the Spectrum
 Inds_N = [];

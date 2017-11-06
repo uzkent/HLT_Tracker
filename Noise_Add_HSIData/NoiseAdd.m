@@ -1,4 +1,4 @@
-function [Sfn]=NoiseAdd(data,ml)
+function [Sfn]=NoiseAdd(data,~)
 %% THIS FUNCTION ADDS NOISE TO THE INPUT DATA CONSIDERING RITMOS
 % =========================================================================
 % Explanation:
@@ -16,7 +16,7 @@ Ax = 17*10^-3;  % Detector array y dimension in cm
 Ay = 17*10^-3;  % Detector array x dimension in cm
 A = Ax * Ay;    % Detector Area
 tint = 10^-3;   % Integration time of the sensor in s
-V_e = 0.8;      % Charge to voltage conversion (Volts per electron)
+V_e = 0.75;      % Charge to voltage conversion (Volts per electron)
 QE = 0.95;      % Quantum efficiency of the sensor (electrons per photon)
 hc = 3.16152649*10^-26; % Planck's Constant
 b = 5;          % Number of bits used in the processed data
